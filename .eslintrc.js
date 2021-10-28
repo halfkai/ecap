@@ -5,6 +5,7 @@ module.exports = {
     node: true
   },
   extends: [
+    'plugin:@typescript-eslint/recommended',
     'plugin:react/recommended',
     'standard'
   ],
@@ -21,5 +22,8 @@ module.exports = {
     '@typescript-eslint'
   ],
   rules: {
+    'no-use-before-define': 'off',
+    '@typescript-eslint/no-use-before-define': 'error',
+    'react/react-in-jsx-scope': 'off'
   }
 }
