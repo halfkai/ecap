@@ -1,38 +1,41 @@
 import {
   BrowserWindow,
   BrowserWindowConstructorOptions,
-  desktopCapturer,
-  Display,
-  NativeImage,
   screen
 } from 'electron'
+import { exec } from 'child_process'
+import fsPromises from 'fs/promises'
 import path from 'path'
-
-interface DisplayShot {
-  displayId: string
-  shot: NativeImage
-}
+import { DisplayAndBounds, DisplayShot } from 'packages/typings/bridge'
+import channels from '../preload/channels'
 
 const isDevelopment = process.env.NODE_ENV === 'development'
 
-export const getDisplayShot: () => Promise<DisplayShot[]> = () => new Promise((resolve, reject) => {
-  desktopCapturer.getSources({
-    types: ['screen'], // TODO: type 'window', build region selection
-    thumbnailSize: { width: 7680, height: 4320 } // set resolution to 8K, if higher may cause storage breakdown
-  }).then((sources) => {
-    const filtered = sources.filter(s => s.display_id)
-    if (filtered && filtered.length) {
-      resolve(filtered.map(s => ({ displayId: s.display_id, shot: s.thumbnail })))
-    } else {
-      reject(new Error('could not match shot'))
-    }
+export const getDisplayShots: () => Promise<DisplayShot[]> = () => new Promise((resolve, reject) => {
+  const binPath = path.resolve(__dirname, `./bin/screenshot-${process.platform}`)
+  const tmpPath = path.resolve(__dirname, './bin/tmp')
+  fsPromises.stat(binPath).then(() => {
+    exec(`${binPath}`, async (err, stdout, stderr) => {
+      if (err || stderr) reject(err || stderr)
+      console.log(stdout)
+      const result: DisplayShot[] = []
+      const fileNames = await fsPromises.readdir(tmpPath)
+      for await (const name of fileNames) {
+        const data = await fsPromises.readFile(path.resolve(tmpPath, name))
+        result.push({ name, data })
+      }
+      resolve(result)
+    })
+  }).catch((err) => {
+    console.error(err)
+    console.error(`${process.platform} is not supported`)
   })
 })
 
-export const getDisplays: () => Promise<Display[]> = () => new Promise((resolve, reject) => {
-  const displays = screen.getAllDisplays().filter(({ id }) => id)
+export const getDisplayAndBounds: () => Promise<DisplayAndBounds[]> = () => new Promise((resolve, reject) => {
+  const displays = screen.getAllDisplays()
   if (displays && displays.length) {
-    resolve(displays)
+    resolve(displays.map((disp, index) => ({ index, id: disp.id, bounds: disp.bounds })))
   } else {
     reject(new Error('could not find displays'))
   }
@@ -40,10 +43,10 @@ export const getDisplays: () => Promise<Display[]> = () => new Promise((resolve,
 
 export const setBackgroundWindow = (options: BrowserWindowConstructorOptions) => new BrowserWindow({
   transparent: true,
-  fullscreen: false,
+  fullscreen: true,
   simpleFullscreen: true,
   focusable: true,
-  alwaysOnTop: true,
+  alwaysOnTop: !isDevelopment,
   movable: false,
   useContentSize: true,
   enableLargerThanScreen: true,
@@ -59,28 +62,33 @@ export const setBackgroundWindow = (options: BrowserWindowConstructorOptions) =>
 
 export const init = () => new Promise((resolve, reject) => {
   Promise.all([
-    getDisplayShot(),
-    getDisplays()
-  ]).then(([displayShot, displays]) => {
-    if (displayShot.length !== displays.length) {
+    getDisplayShots(),
+    getDisplayAndBounds()
+  ]).then(([displayShots, displayAndBounds]) => {
+    if (displayShots.length !== displayAndBounds.length) {
       reject(new Error('the numbers of display and screenshot does not match'))
     }
     const wins = []
-    for (const disp of displays) {
-      console.log(disp.bounds)
-      const win = setBackgroundWindow({ ...disp.bounds })
-      const shot = displayShot.find(s => disp.id.toString() === s.displayId)?.shot
-      win.webContents.loadURL('http://127.0.0.1:5000')
+    for (const dispBounds of displayAndBounds) {
+      console.log(dispBounds.bounds)
+      const win = setBackgroundWindow({ ...dispBounds.bounds })
+      const shot = displayShots.find(
+        s => s.name === `${dispBounds.index}_${dispBounds.bounds.width}x${dispBounds.bounds.height}.png`
+      )
+      if (isDevelopment) {
+        win.webContents.loadURL('http://127.0.0.1:5000')
+        win.webContents.openDevTools()
+      }
       win.webContents.send(
-        'ECAP::INITIALIZED',
-        shot?.resize({ width: disp.bounds.width, height: disp.bounds.height })
-          .toDataURL({ scaleFactor: disp.scaleFactor }))
+        channels.ECAP_INITIALIZED,
+        {
+          ...shot,
+          ...dispBounds
+        }
+      )
       win.on('ready-to-show', () => {
         win.show()
       })
-      if (isDevelopment) {
-        win.webContents.openDevTools()
-      }
       wins.push(win)
     }
     resolve(wins)

@@ -1,5 +1,7 @@
+import { DisplayShotAndBounds } from './bridge'
+
 export interface IElectronAPI {
-  ecapInitialized: Promise<string>
+  ecapInitialized: Promise<DisplayShotAndBounds>
 }
 
 declare global {

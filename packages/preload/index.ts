@@ -1,9 +1,11 @@
 import { contextBridge, ipcRenderer, IpcRendererEvent } from 'electron'
-import { IElectronAPI } from 'packages/typings/renderer'
+import { DisplayShotAndBounds } from 'packages/typings/bridge'
+import { IElectronAPI } from 'packages/typings/electron-api'
+import channels from './channels'
 
 contextBridge.exposeInMainWorld('electronAPI', {
   ecapInitialized: new Promise((resolve) => {
-    ipcRenderer.on('ECAP::INITIALIZED', (e: IpcRendererEvent, data: string) => {
+    ipcRenderer.once(channels.ECAP_INITIALIZED, (e: IpcRendererEvent, data: DisplayShotAndBounds) => {
       resolve(data)
     })
   })

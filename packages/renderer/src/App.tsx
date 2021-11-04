@@ -1,19 +1,21 @@
-import { useState } from 'react'
+import { useEffect } from 'react'
+import useCanvas from './hooks/useCanvas'
 
 function App () {
-  const [backgroundURL, setBackgroundURL] = useState('')
-  window.electronAPI.ecapInitialized.then((data) => {
-    console.log(data)
-    setBackgroundURL(data)
-  })
+  const [background, setBackground] = useCanvas()
+  useEffect(() => {
+    window.electronAPI.ecapInitialized.then((data) => {
+      if (background) {
+        background.width = data.bounds.width
+        background.height = data.bounds.height
+      }
+    })
+  }, [background])
+
+  // const [corpRect] = useCanvas()
+
   return (
-    <div style={{
-      width: '100%',
-      height: '100%'
-      // background: `url(${backgroundURL}) center/100%` // transparent window doesn't need background
-    }}>
-      <a href={backgroundURL} download>download</a>
-    </div>
+    setBackground()
   )
 }
 
