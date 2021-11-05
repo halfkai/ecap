@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import useCanvas from './hooks/useCanvas'
+import useDraw from './hooks/useDraw'
 
 function App () {
   const [background, setBackground] = useCanvas()
@@ -13,6 +14,7 @@ function App () {
   }, [background])
 
   // const [corpRect] = useCanvas()
+  useDraw({ onMouseDown: () => { console.log('e') } })
 
   return (
     setBackground()
