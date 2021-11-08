@@ -1,23 +1,17 @@
-import { useEffect } from 'react'
-import useCanvas from './hooks/useCanvas'
-import useDraw from './hooks/useDraw'
+import BaseCanvas from './components/BaseCanvas'
+import useInitialized from './hooks/useInitialized'
 
 function App () {
-  const [background, setBackground] = useCanvas()
-  useEffect(() => {
-    window.electronAPI.ecapInitialized.then((data) => {
-      if (background) {
-        background.width = data.bounds.width
-        background.height = data.bounds.height
-      }
-    })
-  }, [background])
+  const { image, width, height } = useInitialized()
 
-  // const [corpRect] = useCanvas()
-  useDraw({ onMouseDown: () => { console.log('e') } })
+  const background = BaseCanvas(
+    { width, height }
+  )
+
+  console.log(background)
 
   return (
-    setBackground()
+    background
   )
 }
 
