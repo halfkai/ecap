@@ -1,6 +1,8 @@
-import { CanvasHTMLAttributes, useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import useFabric from '../hooks/useFabric'
+import { BaseCanvasPropsType } from '../types'
 
-const BaseCanvas = (props?: CanvasHTMLAttributes<HTMLCanvasElement>) => {
+const BaseCanvas = (props?: BaseCanvasPropsType) => {
   const [canvas, setCanvas] = useState<HTMLCanvasElement>()
   const canvasRef = useRef(null)
 
@@ -13,7 +15,12 @@ const BaseCanvas = (props?: CanvasHTMLAttributes<HTMLCanvasElement>) => {
     }
   }, [canvasRef])
 
-  return <canvas ref={ canvasRef } {...props}></canvas>
+  useFabric(props)
+
+  return {
+    canvas,
+    setCanvas: () => <canvas ref={ canvasRef } {...props}></canvas>
+  }
 }
 
 export default BaseCanvas

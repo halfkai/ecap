@@ -4,14 +4,20 @@ import useInitialized from './hooks/useInitialized'
 function App () {
   const { image, width, height } = useInitialized()
 
-  const background = BaseCanvas(
-    { width, height }
-  )
+  const {
+    canvas: background,
+    setCanvas: setBackground
+  } = BaseCanvas({
+    width,
+    height,
+    id: 'background',
+    useFabric: true
+  })
 
   console.log(background)
 
   return (
-    background
+    setBackground()
   )
 }
 
