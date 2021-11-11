@@ -6,18 +6,18 @@ function App () {
 
   const {
     canvas: background,
-    setCanvas: setBackground
+    renderer: setBackground,
+    f
   } = BaseCanvas({
     width,
     height,
     id: 'background',
     useFabric: true
   })
-
-  console.log(background)
+  console.log(f)
 
   return (
-    setBackground()
+    setBackground
   )
 }
 

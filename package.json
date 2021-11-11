@@ -20,11 +20,13 @@
   },
   "dependencies": {
     "fabric": "^4.6.0",
+    "prop-types": "^15.7.2",
     "react": "^17.0.0",
     "react-dom": "^17.0.0",
     "react-use": "^17.3.1"
   },
   "devDependencies": {
+    "@rollup/plugin-commonjs": "^21.0.1",
     "@types/fabric": "^4.5.4",
     "@types/fs-extra": "^9.0.13",
     "@types/react": "^17.0.0",
