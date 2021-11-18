@@ -23,7 +23,8 @@
     "prop-types": "^15.7.2",
     "react": "^17.0.0",
     "react-dom": "^17.0.0",
-    "react-use": "^17.3.1"
+    "react-use": "^17.3.1",
+    "redux": "^4.1.2"
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^21.0.1",
