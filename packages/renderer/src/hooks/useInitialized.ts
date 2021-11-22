@@ -1,19 +1,29 @@
 import { useEffect, useState } from 'react'
+import { useAppDispatch, useAppSelector } from '.'
+import { set } from '../store/rootStyleSlice'
 
 const useInitialized = () => {
   const [image, setImage] = useState<Buffer>()
-  const [width, setWidth] = useState<number | string>('100%')
-  const [height, setHeight] = useState<number | string>('100%')
+  const rootStyle = useAppSelector(state => state.rootStyle)
+  const dispatch = useAppDispatch()
 
   useEffect(() => {
     window.electronAPI.ecapInitialized.then((data) => {
-      setWidth(data.bounds.width)
-      setHeight(data.bounds.height)
+      dispatch(set(['height', data.bounds.height]))
+      dispatch(set(['width', data.bounds.width]))
       setImage(data.data)
     })
   }, [])
 
-  return { image, width, height }
+  useEffect(() => {
+    const root = document.getElementById('root')
+    if (root && parseInt(rootStyle.width, 10) && parseInt(rootStyle.height, 10)) {
+      root.style.width = rootStyle.width
+      root.style.height = rootStyle.height
+    }
+  }, [rootStyle])
+
+  return { image }
 }
 
 export default useInitialized

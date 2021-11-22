@@ -1,23 +1,9 @@
-import BaseCanvas from './components/BaseCanvas'
-import useInitialized from './hooks/useInitialized'
+import { useInitialized } from './hooks'
 
 function App () {
-  const { image, width, height } = useInitialized()
-
-  const {
-    canvas: background,
-    renderer: setBackground,
-    f
-  } = BaseCanvas({
-    width,
-    height,
-    id: 'background',
-    useFabric: true
-  })
-  console.log(f)
-
+  const { image } = useInitialized()
   return (
-    setBackground
+    <div id='background'></div>
   )
 }
 

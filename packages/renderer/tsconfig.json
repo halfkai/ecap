@@ -3,7 +3,7 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "/@/*": [
+      "@/*": [
         "./src/*"
       ]
     },
@@ -13,6 +13,6 @@
     "src/**/*.vue",
     "src/**/*.ts",
     "src/**/*.tsx",
-    "../typings/**/*.d.ts", "src/hooks/useSketchField.jsx",
+    "../typings/**/*.d.ts"
   ]
 }

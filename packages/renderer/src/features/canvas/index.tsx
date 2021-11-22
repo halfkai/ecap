@@ -1,12 +1,11 @@
 import { useEffect, useRef, useState } from 'react'
 import { fabric } from 'fabric'
-import { Canvas } from 'fabric/fabric-impl'
 import PropTypes from 'prop-types'
-import { BaseCanvasPropsType } from '../types'
+import { BaseCanvasPropsType } from '../../types'
 
 const BaseCanvas = (props: BaseCanvasPropsType) => {
   const [canvas, setCanvas] = useState<HTMLCanvasElement>()
-  const [f, setF] = useState<Canvas>()
+  const [f, setF] = useState<fabric.Canvas>()
   const canvasRef = useRef(null)
 
   useEffect(() => {
@@ -31,6 +30,12 @@ const BaseCanvas = (props: BaseCanvasPropsType) => {
     props.width,
     props.height
   ])
+
+  useEffect(() => {
+    if (canvas) {
+      console.log('1')
+    }
+  }, [canvas])
 
   return {
     canvas,
