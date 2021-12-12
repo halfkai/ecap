@@ -68,7 +68,7 @@ export const init = () => new Promise((resolve, reject) => {
     if (displayShots.length !== displayAndBounds.length) {
       reject(new Error('the numbers of display and screenshot does not match'))
     }
-    const wins = []
+    const wins: BrowserWindow[] = []
     for (const dispBounds of displayAndBounds) {
       console.log(dispBounds.bounds)
       const win = setBackgroundWindow({ ...dispBounds.bounds })

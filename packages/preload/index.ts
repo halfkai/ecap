@@ -8,5 +8,8 @@ contextBridge.exposeInMainWorld('electronAPI', {
     ipcRenderer.once(channels.ECAP_INITIALIZED, (e: IpcRendererEvent, data: DisplayShotAndBounds) => {
       resolve(data)
     })
-  })
+  }),
+  ecapFinished: () => {
+    ipcRenderer.send(channels.ECAP_FINISHED)
+  }
 } as IElectronAPI)

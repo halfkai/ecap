@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useAppDispatch, useAppSelector } from '.'
 import { set } from '../store/rootStyleSlice'
 
-const useInitialized = () => {
+export const useInit = () => {
   const [image, setImage] = useState<Buffer>()
   const rootStyle = useAppSelector(state => state.rootStyle)
   const dispatch = useAppDispatch()
@@ -23,7 +23,8 @@ const useInitialized = () => {
     }
   }, [rootStyle])
 
-  return { image }
+  return {
+    image,
+    ...rootStyle
+  }
 }
-
-export default useInitialized

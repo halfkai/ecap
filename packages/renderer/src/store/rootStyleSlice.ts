@@ -1,6 +1,4 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-// import type { RootState } from '.'
-
 
 interface RootStyleState {
   width: `${number}px`
